@@ -1,0 +1,241 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "⚡ Gym Lambda Functions - Deep Dive",
+    "description": "Monitoreo detallado de las funciones Lambda del gimnasio",
+    "tags": ["gym", "lambda", "serverless"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "👥 User Management Function",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+        "collapsed": false
+      },
+      {
+        "id": 2,
+        "title": "User Management - Invocations",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 1},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-user-management"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "User Management - Duration",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 1},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Duration",
+            "dimensions": {"FunctionName": "gym-user-management"},
+            "statistics": ["Average", "Maximum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "ms"}
+        }
+      },
+      {
+        "id": 4,
+        "title": "User Management - Errors",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 1},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Errors",
+            "dimensions": {"FunctionName": "gym-user-management"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 1}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "🗓️ Booking System Function",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9},
+        "collapsed": false
+      },
+      {
+        "id": 6,
+        "title": "Booking System - Invocations",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 10},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-booking-system"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Booking System - Duration",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 10},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Duration",
+            "dimensions": {"FunctionName": "gym-booking-system"},
+            "statistics": ["Average", "Maximum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "ms"}
+        }
+      },
+      {
+        "id": 8,
+        "title": "Booking System - Errors",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 10},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Errors",
+            "dimensions": {"FunctionName": "gym-booking-system"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 1}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "💳 Payment Processor Function",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 18},
+        "collapsed": false
+      },
+      {
+        "id": 10,
+        "title": "Payment Processor - Invocations",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 19},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-payment-processor"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Payment Processor - Duration",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 19},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Duration",
+            "dimensions": {"FunctionName": "gym-payment-processor"},
+            "statistics": ["Average", "Maximum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "ms"}
+        }
+      },
+      {
+        "id": 12,
+        "title": "Payment Processor - Errors",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 19},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Errors",
+            "dimensions": {"FunctionName": "gym-payment-processor"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 1}
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

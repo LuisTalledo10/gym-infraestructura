@@ -72,6 +72,20 @@ module "cloudfront" {
   environment             = var.environment
 }
 
+module "grafana" {
+  source = "./grafana"
+  
+  workspace_name           = "gym-infrastructure-monitoring"
+  environment             = var.environment
+  sns_topic_arn           = module.iam.sns_topic_arn
+  rds_instance_identifier = module.rds.db_instance_identifier
+  log_retention_days      = 30
+  enable_enterprise_features = false
+  enable_alerting         = true
+  authentication_providers = ["SAML"]  # Usar SAML en lugar de SSO
+  enable_saml             = true
+}
+
 # Random string for unique domain names
 resource "random_string" "domain_suffix" {
   length  = 8

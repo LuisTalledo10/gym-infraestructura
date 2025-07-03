@@ -1,0 +1,262 @@
+# Configuración alternativa para Grafana usando CloudWatch como alternativa
+# Esta configuración crea dashboards de CloudWatch cuando Grafana no está disponible
+
+# CloudWatch Dashboard principal para el gimnasio
+resource "aws_cloudwatch_dashboard" "gym_main_dashboard" {
+  dashboard_name = "gym-infrastructure-main"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "text"
+        x      = 0
+        y      = 0
+        width  = 24
+        height = 2
+        properties = {
+          markdown = "# 🏋️ Gym Infrastructure Monitoring\n\nDashboard principal para monitoreo de la infraestructura del gimnasio"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 2
+        width  = 8
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/Lambda", "Invocations", "FunctionName", var.lambda_user_function_name],
+            [".", "Errors", ".", "."],
+            [".", "Duration", ".", "."]
+          ]
+          period = 300
+          stat   = "Sum"
+          region = var.region
+          title  = "Lambda - Gestión de Usuarios"
+          yAxis = {
+            left = {
+              min = 0
+            }
+          }
+        }
+      },
+      {
+        type   = "metric"
+        x      = 8
+        y      = 2
+        width  = 8
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/Lambda", "Invocations", "FunctionName", var.lambda_booking_function_name],
+            [".", "Errors", ".", "."],
+            [".", "Duration", ".", "."]
+          ]
+          period = 300
+          stat   = "Sum"
+          region = var.region
+          title  = "Lambda - Sistema de Reservas"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 16
+        y      = 2
+        width  = 8
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/Lambda", "Invocations", "FunctionName", var.lambda_payment_function_name],
+            [".", "Errors", ".", "."],
+            [".", "Duration", ".", "."]
+          ]
+          period = 300
+          stat   = "Sum"
+          region = var.region
+          title  = "Lambda - Procesador de Pagos"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 8
+        width  = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", var.rds_instance_identifier],
+            [".", "DatabaseConnections", ".", "."],
+            [".", "FreeableMemory", ".", "."]
+          ]
+          period = 300
+          stat   = "Average"
+          region = var.region
+          title  = "RDS - Base de Datos del Gimnasio"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 8
+        width  = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/ApiGateway", "Count", "ApiName", var.api_gateway_name],
+            [".", "Latency", ".", "."],
+            [".", "4XXError", ".", "."],
+            [".", "5XXError", ".", "."]
+          ]
+          period = 300
+          stat   = "Sum"
+          region = var.region
+          title  = "API Gateway - Gym API"
+        }
+      }
+    ]
+  })
+}
+
+# Dashboard para S3 y CloudFront
+resource "aws_cloudwatch_dashboard" "gym_cdn_dashboard" {
+  dashboard_name = "gym-cdn-storage"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "text"
+        x      = 0
+        y      = 0
+        width  = 24
+        height = 2
+        properties = {
+          markdown = "# 📦 CDN y Almacenamiento\n\nMonitoreo de CloudFront y S3 para la aplicación del gimnasio"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 2
+        width  = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/CloudFront", "Requests", "DistributionId", var.cloudfront_distribution_id],
+            [".", "BytesDownloaded", ".", "."],
+            [".", "4xxErrorRate", ".", "."],
+            [".", "5xxErrorRate", ".", "."]
+          ]
+          period = 300
+          stat   = "Sum"
+          region = "us-east-1"  # CloudFront metrics are always in us-east-1
+          title  = "CloudFront - Distribución CDN"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 2
+        width  = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/S3", "BucketSizeBytes", "BucketName", var.s3_bucket_name, "StorageType", "StandardStorage"],
+            [".", "NumberOfObjects", ".", ".", ".", "AllStorageTypes"]
+          ]
+          period = 86400  # Daily for S3 metrics
+          stat   = "Average"
+          region = var.region
+          title  = "S3 - Almacenamiento"
+        }
+      }
+    ]
+  })
+}
+
+# CloudWatch Alarms para componentes críticos
+resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
+  for_each = toset([
+    var.lambda_user_function_name,
+    var.lambda_booking_function_name,
+    var.lambda_payment_function_name
+  ])
+
+  alarm_name          = "gym-lambda-errors-${each.key}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "5"
+  alarm_description   = "This metric monitors lambda errors for ${each.key}"
+  alarm_actions       = var.sns_topic_arn != "" ? [var.sns_topic_arn] : []
+
+  dimensions = {
+    FunctionName = each.key
+  }
+
+  tags = {
+    Name        = "gym-lambda-errors-${each.key}"
+    Environment = var.environment
+    Project     = "gym-management"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "rds_cpu_high" {
+  alarm_name          = "gym-rds-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/RDS"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "80"
+  alarm_description   = "This metric monitors RDS CPU utilization"
+  alarm_actions       = var.sns_topic_arn != "" ? [var.sns_topic_arn] : []
+
+  dimensions = {
+    DBInstanceIdentifier = var.rds_instance_identifier
+  }
+
+  tags = {
+    Name        = "gym-rds-cpu-high"
+    Environment = var.environment
+    Project     = "gym-management"
+  }
+}
+
+# Log Insights queries predefinidas
+resource "aws_cloudwatch_query_definition" "lambda_errors_query" {
+  name = "gym-lambda-errors"
+
+  log_group_names = [
+    "/aws/lambda/${var.lambda_user_function_name}",
+    "/aws/lambda/${var.lambda_booking_function_name}",
+    "/aws/lambda/${var.lambda_payment_function_name}"
+  ]
+
+  query_string = <<EOF
+fields @timestamp, @message, @requestId
+| filter @message like /ERROR/
+| sort @timestamp desc
+| limit 100
+EOF
+}
+
+resource "aws_cloudwatch_query_definition" "api_gateway_slow_requests" {
+  name = "gym-api-slow-requests"
+
+  log_group_names = [
+    "API-Gateway-Execution-Logs_${var.api_gateway_id}/${var.environment}"
+  ]
+
+  query_string = <<EOF
+fields @timestamp, @message, @requestId
+| filter @message like /responseTime/
+| parse @message "responseTime: *" as responseTime
+| filter responseTime > 2000
+| sort @timestamp desc
+| limit 50
+EOF
+}

@@ -1,0 +1,218 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "🗄️ Gym Database (RDS) Monitoring",
+    "description": "Monitoreo completo de la base de datos MySQL del gimnasio",
+    "tags": ["gym", "rds", "database", "mysql"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "🔋 Database Performance Overview",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+        "collapsed": false
+      },
+      {
+        "id": 2,
+        "title": "CPU Utilization",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 1},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "CPUUtilization",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "options": {
+          "min": 0,
+          "max": 100,
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 70},
+                {"color": "red", "value": 90}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Database Connections",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 1},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "DatabaseConnections",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 50},
+                {"color": "red", "value": 80}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Free Storage Space",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 1},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "FreeStorageSpace",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 1000000000},
+                {"color": "green", "value": 5000000000}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "📊 I/O Operations",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9},
+        "collapsed": false
+      },
+      {
+        "id": 6,
+        "title": "Read IOPS",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "ReadIOPS",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "iops"}
+        }
+      },
+      {
+        "id": 7,
+        "title": "Write IOPS",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "WriteIOPS",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "iops"}
+        }
+      },
+      {
+        "id": 8,
+        "title": "⏱️ Latency Metrics",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 18},
+        "collapsed": false
+      },
+      {
+        "id": 9,
+        "title": "Read Latency",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 19},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "ReadLatency",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "s"}
+        }
+      },
+      {
+        "id": 10,
+        "title": "Write Latency",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 19},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "WriteLatency",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "s"}
+        }
+      }
+    ]
+  }
+}

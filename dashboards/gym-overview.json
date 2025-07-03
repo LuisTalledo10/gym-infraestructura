@@ -1,0 +1,228 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "🏋️ Gym Infrastructure - Overview",
+    "description": "Dashboard principal del sistema de gimnasio",
+    "tags": ["gym", "overview", "aws"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "🎯 System Status",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-user-management"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "displayMode": "basic"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "displayName": "User Management Calls",
+            "unit": "short",
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 1},
+                {"color": "green", "value": 10}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "⚡ Lambda Functions - Invocations",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-user-management"},
+            "statistics": ["Sum"],
+            "period": "300",
+            "alias": "User Management"
+          },
+          {
+            "refId": "B",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-booking-system"},
+            "statistics": ["Sum"],
+            "period": "300",
+            "alias": "Booking System"
+          },
+          {
+            "refId": "C",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Invocations",
+            "dimensions": {"FunctionName": "gym-payment-processor"},
+            "statistics": ["Sum"],
+            "period": "300",
+            "alias": "Payment Processor"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "🗄️ Database Performance",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "CPUUtilization",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300",
+            "alias": "CPU %"
+          },
+          {
+            "refId": "B",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/RDS",
+            "metricName": "DatabaseConnections",
+            "dimensions": {"DBInstanceIdentifier": "terraform-2025070317470231270000000a"},
+            "statistics": ["Average"],
+            "period": "300",
+            "alias": "Connections"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "🚀 API Gateway Performance",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 12},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/ApiGateway",
+            "metricName": "Count",
+            "dimensions": {"ApiName": "gym-api"},
+            "statistics": ["Sum"],
+            "period": "300"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "displayName": "Total Requests",
+            "unit": "short",
+            "color": {"mode": "palette-classic"}
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "⏱️ API Latency",
+        "type": "gauge",
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 12},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/ApiGateway",
+            "metricName": "Latency",
+            "dimensions": {"ApiName": "gym-api"},
+            "statistics": ["Average"],
+            "period": "300"
+          }
+        ],
+        "options": {
+          "min": 0,
+          "max": 2000,
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 200},
+                {"color": "red", "value": 500}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "❌ Error Rates",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 12},
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Errors",
+            "dimensions": {"FunctionName": "gym-user-management"},
+            "statistics": ["Sum"],
+            "period": "300",
+            "alias": "User Mgmt Errors"
+          },
+          {
+            "refId": "B",
+            "datasource": {"type": "cloudwatch", "uid": "${DS_CLOUDWATCH}"},
+            "region": "us-east-1",
+            "namespace": "AWS/Lambda",
+            "metricName": "Errors",
+            "dimensions": {"FunctionName": "gym-booking-system"},
+            "statistics": ["Sum"],
+            "period": "300",
+            "alias": "Booking Errors"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -88,5 +88,45 @@ output "gym_auth_url" {
   value       = "https://${module.cognito.user_pool_domain}.auth.${data.aws_region.current.name}.amazoncognito.com"
 }
 
+# Grafana Outputs
+output "grafana_workspace_id" {
+  description = "ID of the Grafana workspace"
+  value       = module.grafana.grafana_workspace_id
+}
+
+output "grafana_dashboard_url" {
+  description = "URL to access Grafana dashboard"
+  value       = module.grafana.grafana_dashboard_url
+}
+
+output "grafana_workspace_status" {
+  description = "Status of the Grafana workspace"
+  value       = module.grafana.grafana_workspace_status
+}
+
+output "grafana_configuration" {
+  description = "Complete Grafana workspace configuration"
+  value       = module.grafana.grafana_workspace_configuration
+  sensitive   = false
+}
+
+output "grafana_setup_guide" {
+  description = "Instructions for setting up Grafana"
+  value       = module.grafana.grafana_setup_instructions
+}
+
+# All URLs Summary
+output "gym_complete_urls" {
+  description = "Complete summary of all application URLs"
+  value = {
+    application_url = "https://${module.cloudfront.cloudfront_domain_name}"
+    api_url         = "https://${module.api_gateway.api_gateway_domain_name}/prod"
+    auth_url        = "https://${module.cognito.user_pool_domain}.auth.${data.aws_region.current.name}.amazoncognito.com"
+    grafana_url     = module.grafana.grafana_dashboard_url
+    cloudwatch_url  = "https://console.aws.amazon.com/cloudwatch/home?region=${data.aws_region.current.name}#dashboards:name=gym-monitoring-dashboard"
+    setup_monitoring = "Grafana configurado con SAML - configurar autenticación en la consola"
+  }
+}
+
 # Data source for current AWS region
 data "aws_region" "current" {}
