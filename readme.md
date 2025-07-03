@@ -1,4 +1,3 @@
-
 # 🏋️ Sistema de Gestión de Gimnasio - AWS Infrastructure
 
 [![AWS](https://img.shields.io/badge/AWS-Cloud-orange)](https://aws.amazon.com/)
@@ -12,33 +11,54 @@ Sistema completo de gestión de gimnasio desplegado en AWS usando infraestructur
 ## 🏗️ Arquitectura
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        AWS CLOUD                           │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │             │  │             │  │             │        │
-│  │ API Gateway │──│   Lambda    │──│     RDS     │        │
-│  │             │  │ Functions   │  │   MySQL     │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-│         │                                   │              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │     S3      │  │     VPC     │  │ CloudWatch  │        │
-│  │   Storage   │  │  Networking │  │ Monitoring  │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              AWS CLOUD                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  FRONTEND                    │            BACKEND                          │
+│  ┌──────────────┐            │  ┌─────────────┐  ┌─────────────┐          │
+│  │  CloudFront  │────────────│──│ API Gateway │──│   Lambda    │          │
+│  │ Distribution │            │  │             │  │ Functions   │          │
+│  └──────────────┘            │  └─────────────┘  └─────────────┘          │
+│         │                    │         │                │                  │
+│  ┌──────────────┐            │  ┌─────────────┐  ┌─────────────┐          │
+│  │   Cognito    │            │  │     S3      │  │     RDS     │          │
+│  │User Pool/Auth│            │  │   Storage   │  │MySQL Multi-AZ│         │
+│  └──────────────┘            │  └─────────────┘  └─────────────┘          │
+│         │                    │         │                                   │
+│  ┌──────────────┐            │  ┌─────────────┐  ┌─────────────┐          │
+│  │Internet GW   │            │  │     VPC     │  │ CloudWatch  │          │
+│  │              │            │  │  Networking │  │ Monitoring  │          │
+│  └──────────────┘            │  └─────────────┘  └─────────────┘          │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Componentes principales:
+### 🎯 Componentes Frontend:
+- **CloudFront**: Distribución global de contenido con cache y compresión
+- **Cognito**: Autenticación de usuarios con User Pool e Identity Pool
+- **API Gateway**: Endpoints REST para comunicación con backend
+- **Internet Gateway**: Conectividad pública
+
+### ⚙️ Componentes Backend:
 - **VPC y Networking**: Subredes públicas y privadas en múltiples AZs
-- **RDS MySQL**: Base de datos con clase de instancia db.t3.micro compatible con MySQL 8.0
-- **S3**: Almacenamiento de archivos con acceso público bloqueado  
-- **API Gateway**: Endpoints REST para la aplicación
 - **Lambda**: 3 funciones serverless (usuarios, reservas, pagos)
-- **IAM**: Roles y políticas de seguridad
+- **RDS MySQL**: Base de datos Multi-AZ con clase db.t3.micro
+- **S3**: Almacenamiento de archivos con acceso público bloqueado  
+- **IAM**: Roles y políticas de seguridad + SNS para notificaciones
 - **CloudWatch**: Dashboard de monitoreo y 9 alarmas configuradas
 
+### 🔐 Grupos de Usuarios Cognito:
+- **gym-admins**: Administradores con acceso completo
+- **gym-trainers**: Entrenadores con acceso limitado  
+- **gym-members**: Miembros con acceso básico
+
 ## 🚀 Descripción
-Infraestructura como código para sistema de gestión de gimnasio usando AWS.
+Infraestructura como código para sistema de gestión de gimnasio usando AWS con arquitectura completa que incluye frontend, backend, autenticación, monitoreo y seguridad.
+
+### ✨ Nuevos Módulos Agregados
+- **CloudFront**: Distribución global de contenido
+- **Cognito**: Autenticación y autorización de usuarios
+- **API Gateway**: REST API centralizada
+- **Monitoreo**: Dashboard de CloudWatch con métricas completas
 
 ## 📋 Requisitos
 - Terraform >= 1.11.4

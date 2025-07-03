@@ -51,4 +51,32 @@ module "monitoring" {
   region                      = var.region
 }
 
+module "cognito" {
+  source = "./cognito"
+  
+  user_pool_name      = "gym-user-pool"
+  client_name         = "gym-web-client"
+  domain_name         = "gym-auth-${random_string.domain_suffix.result}"
+  identity_pool_name  = "gym-identity-pool"
+  callback_urls       = ["https://${module.cloudfront.cloudfront_domain_name}/callback"]
+  logout_urls         = ["https://${module.cloudfront.cloudfront_domain_name}/logout"]
+  environment         = var.environment
+  api_gateway_arn     = module.api_gateway.api_gateway_arn
+}
+
+module "cloudfront" {
+  source = "./cloudfront"
+  
+  api_gateway_domain_name = module.api_gateway.api_gateway_domain_name
+  s3_bucket_domain_name   = module.s3.bucket_domain_name
+  environment             = var.environment
+}
+
+# Random string for unique domain names
+resource "random_string" "domain_suffix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
 

@@ -15,5 +15,5 @@ output "payment_processor_arn" {
 
 output "lambda_security_group_id" {
   description = "ID of the Lambda security group"
-  value       = length(aws_security_group.lambda_sg) > 0 ? aws_security_group.lambda_sg[0].id : null
+  value       = aws_security_group.lambda_sg.id
 }

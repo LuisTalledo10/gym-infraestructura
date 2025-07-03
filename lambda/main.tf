@@ -15,7 +15,7 @@ resource "aws_lambda_function" "user_management" {
     for_each = var.vpc_id != "" ? [1] : []
     content {
       subnet_ids         = var.private_subnet_ids
-      security_group_ids = var.vpc_id != "" ? [aws_security_group.lambda_sg[0].id] : []
+      security_group_ids = var.vpc_id != "" ? [aws_security_group.lambda_sg.id] : []
     }
   }
 
@@ -49,7 +49,7 @@ resource "aws_lambda_function" "booking_system" {
     for_each = var.vpc_id != "" ? [1] : []
     content {
       subnet_ids         = var.private_subnet_ids
-      security_group_ids = var.vpc_id != "" ? [aws_security_group.lambda_sg[0].id] : []
+      security_group_ids = var.vpc_id != "" ? [aws_security_group.lambda_sg.id] : []
     }
   }
 
@@ -83,7 +83,7 @@ resource "aws_lambda_function" "payment_processor" {
     for_each = var.vpc_id != "" ? [1] : []
     content {
       subnet_ids         = var.private_subnet_ids
-      security_group_ids = var.vpc_id != "" ? [aws_security_group.lambda_sg[0].id] : []
+      security_group_ids = var.vpc_id != "" ? [aws_security_group.lambda_sg.id] : []
     }
   }
 
@@ -102,9 +102,8 @@ data "archive_file" "payment_zip" {
   output_path = "${path.module}/payment-function.zip"
 }
 
-# Security Group para Lambda (solo si hay VPC)
+# Security Group para Lambda
 resource "aws_security_group" "lambda_sg" {
-  count       = var.vpc_id != "" ? 1 : 0
   name        = "lambda-sg"
   description = "Security group for Lambda functions"
   vpc_id      = var.vpc_id

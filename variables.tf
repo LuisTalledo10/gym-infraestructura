@@ -22,3 +22,9 @@ variable "lambda_role_name" {
   description = "Lambda role name"
   default     = "lambda_execution_role"
 }
+
+variable "environment" {
+  description = "Environment name (dev, staging, prod)"
+  type        = string
+  default     = "dev"
+}
