@@ -145,18 +145,47 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
   role       = aws_iam_role.lambda_role.name
 }
 
+# Agregar política AWS administrada para VPC
+resource "aws_iam_role_policy_attachment" "lambda_vpc_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+  role       = aws_iam_role.lambda_role.name
+}
+
 resource "aws_iam_policy" "lambda_policy" {
   name        = "gym-lambda-policy"
-  description = "Lambda policy with basic permissions"
+  description = "Lambda policy with basic permissions and VPC access"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action   = [
-          "logs:*",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
           "s3:ListBucket",
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+      {
+        Action   = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:AttachNetworkInterface",
+          "ec2:DetachNetworkInterface"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+      {
+        Action   = [
+          "rds:DescribeDBInstances",
+          "rds:Connect"
         ]
         Effect   = "Allow"
         Resource = "*"
