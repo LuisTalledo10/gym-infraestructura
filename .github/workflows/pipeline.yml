@@ -1,0 +1,49 @@
+name: Infrastructure Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+      
+      - name: Terraform Format
+        run: terraform fmt -check
+      
+      - name: Terraform Init
+        run: terraform init
+      
+      - name: Terraform Validate
+        run: terraform validate
+
+  test:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Tests
+        run: go test ./tests/... -v
+
+  security_scan:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Checkov
+        run: |
+          docker run --rm -v $PWD:/app bridgecrew/checkov \
+            --directory /app \
+            -o junitxml \
+            --output-file-path results.xml
+
+  deploy:
+    needs: security_scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Infrastructure
+        run: terraform apply -auto-approve

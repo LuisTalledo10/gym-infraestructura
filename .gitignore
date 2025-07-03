@@ -1,0 +1,39 @@
+# Crear .gitignore
+@"
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate.backup
+
+# Logs
+*.log
+
+# Exclude docs folder
+docs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+
+# Lambda ZIP files
+*.zip
+lambda/*.zip
+
+# AWS credentials
+.aws/
+credentials
+
+# Environment files
+.env
+"@ | Out-File -FilePath .gitignore -Encoding UTF8
