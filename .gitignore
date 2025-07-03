@@ -14,6 +14,9 @@ terraform.tfstate.backup
 # Exclude docs folder
 docs/
 
+# Exclude scripts folder
+scripts/
+
 # OS files
 .DS_Store
 Thumbs.db
