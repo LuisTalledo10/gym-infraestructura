@@ -1,10 +1,14 @@
-# 🏋️ Sistema de Gestión de Gimnasio - AWS Infrastructure
+# Sistema de Gestión de Gimnasio - AWS Infrastructure
 
 [![AWS](https://img.shields.io/badge/AWS-Cloud-orange)](https://aws.amazon.com/)
 [![Terraform](https://img.shields.io/badge/Terraform-Infrastructure-blue)](https://www.terraform.io/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-## 📋 Descripción del Proyecto
+## Integrantes
+    - Talledo Machado Luis 
+    - Tandaypan Garibay Luis
+
+## Descripción del Proyecto
 
 Sistema completo de gestión de gimnasio desplegado en AWS usando infraestructura como código (Terraform). Incluye arquitectura serverless, base de datos, almacenamiento, API Gateway y monitoreo completo.
 
@@ -86,7 +90,7 @@ terraform apply -auto-approve
 terraform output
 ```
 
-## 📊 Dashboard de Monitoreo
+## Dashboard de Monitoreo
 URL: https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=gym-infrastructure-dashboard
 
 ## Outputs Principales
