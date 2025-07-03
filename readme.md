@@ -10,27 +10,11 @@ Sistema completo de gestión de gimnasio desplegado en AWS usando infraestructur
 
 ## 🏗️ Arquitectura
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              AWS CLOUD                                     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  FRONTEND                    │            BACKEND                          │
-│  ┌──────────────┐            │  ┌─────────────┐  ┌─────────────┐          │
-│  │  CloudFront  │────────────│──│ API Gateway │──│   Lambda    │          │
-│  │ Distribution │            │  │             │  │ Functions   │          │
-│  └──────────────┘            │  └─────────────┘  └─────────────┘          │
-│         │                    │         │                │                  │
-│  ┌──────────────┐            │  ┌─────────────┐  ┌─────────────┐          │
-│  │   Cognito    │            │  │     S3      │  │     RDS     │          │
-│  │User Pool/Auth│            │  │   Storage   │  │MySQL Multi-AZ│         │
-│  └──────────────┘            │  └─────────────┘  └─────────────┘          │
-│         │                    │         │                                   │
-│  ┌──────────────┐            │  ┌─────────────┐  ┌─────────────┐          │
-│  │Internet GW   │            │  │     VPC     │  │ CloudWatch  │          │
-│  │              │            │  │  Networking │  │ Monitoring  │          │
-│  └──────────────┘            │  └─────────────┘  └─────────────┘          │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+![Diagrama de Arquitectura del Sistema de Gestión de Gimnasio](gym_infra_diagrama.png)
+
+*Diagrama completo de la infraestructura serverless en AWS - Frontend (CloudFront, Cognito, API Gateway) conectado con Backend (Lambda, RDS, S3) en arquitectura Multi-AZ con monitoreo CloudWatch*
+
+> 💡 **Tip**: Haz clic en la imagen para verla en tamaño completo y explorar todos los componentes y conexiones.
 
 ### 🎯 Componentes Frontend:
 - **CloudFront**: Distribución global de contenido con cache y compresión
@@ -50,6 +34,21 @@ Sistema completo de gestión de gimnasio desplegado en AWS usando infraestructur
 - **gym-admins**: Administradores con acceso completo
 - **gym-trainers**: Entrenadores con acceso limitado  
 - **gym-members**: Miembros con acceso básico
+
+### 📊 Flujo de Datos (según diagrama):
+1. **Usuario** → **CloudFront** (CDN global)
+2. **CloudFront** → **Cognito** (autenticación)
+3. **Frontend** → **API Gateway** (endpoints REST)
+4. **API Gateway** → **Lambda Functions** (lógica de negocio)
+5. **Lambda** → **RDS MySQL** (persistencia de datos)
+6. **Lambda** → **S3** (almacenamiento de archivos)
+7. **CloudWatch** monitorea todos los componentes
+8. **SNS** envía notificaciones y alertas
+
+### 🌐 Arquitectura de Red:
+- **Public Subnets**: Internet Gateway, NAT Gateways, Load Balancers
+- **Private Subnets**: Lambda Functions, RDS, aplicaciones backend
+- **Multi-AZ**: Alta disponibilidad en múltiples zonas de disponibilidad
 
 ## 🚀 Descripción
 Infraestructura como código para sistema de gestión de gimnasio usando AWS con arquitectura completa que incluye frontend, backend, autenticación, monitoreo y seguridad.
